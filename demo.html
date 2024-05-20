@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      const wm1 = new WeakMap();
+      const wm2 = new WeakMap();
+      const wm3 = new WeakMap();
+      const o1 = {};
+      const o2 = function () {};
+      const o3 = window;
+
+      wm1.set(o1, 37);
+      wm1.set(o2, "azerty");
+      wm2.set(o1, o2); // value 可以是任意值，包括一个对象或一个函数
+      wm2.set(o2, undefined);
+      wm2.set(wm1, wm2); // 键和值可以是任意对象，甚至另外一个 WeakMap 对象
+
+      console.log(wm1);
+      console.log(wm2);
+    </script>
+  </body>
+</html>

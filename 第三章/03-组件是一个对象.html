@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      /**
+       * 当组件是一个对象时的处理
+       */
+      import { renderer } from "./utils/index.js";
+      const MyComponent = {
+        render() {
+          return {
+            tag: "div",
+            props: {
+              onClick: () => alert("hello"),
+            },
+            children: "click me",
+          };
+        },
+      };
+      const vnode = {
+        tag: MyComponent,
+      };
+      renderer(vnode, document.body);
+    </script>
+  </body>
+</html>

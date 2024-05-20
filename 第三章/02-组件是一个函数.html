@@ -8,12 +8,27 @@
     <style></style>
   </head>
   <body>
-    <script>
+    <script type="module">
+      import { renderer } from "./utils/index.js";
       /**
        * 组件就是一组DOM元素的封装
        * 这组DOM元素就是组件要渲染的内容
        * 因此可以定义一个函数来代表组件,而函数的返回就代表组件要渲染的内容
        */
+      const MyComponent = function () {
+        return {
+          tag: "div",
+          props: {
+            onClick: () => alert("hello"),
+          },
+          children: "click me",
+        };
+      };
+      const vnode = {
+        tag: MyComponent,
+      };
+
+      renderer(vnode, document.body);
     </script>
   </body>
 </html>
