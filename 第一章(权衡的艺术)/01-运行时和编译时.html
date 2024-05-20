@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script>
+      // render函数
+      // 将对象递归 渲染成DOM元素
+
+      const obj = {
+        tag: "div",
+        children: [{ tag: "span", children: "hello world" }],
+      };
+
+      function render(obj, root) {
+        const el = document.createElement(obj.tag);
+        if (typeof obj.children === "string") {
+          const text = document.createTextNode(obj.children);
+          el.appendChild(text);
+        } else if (typeof obj.children === "object") {
+          obj.children.forEach((child) => render(child, el));
+        }
+
+        root.appendChild(el);
+      }
+
+      render(obj, document.body);
+    </script>
+  </body>
+</html>

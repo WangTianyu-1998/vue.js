@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script>
+      // 渲染器的作用就是将虚拟DOM转化为真实DOM
+      /**
+       * tag用来描述标签名称,所以tag:'div'描述的就是一个<div>
+       * props是一个对象,用来表述 div 标签的属性 事件等内容. 可以看到,我们希望给div绑定一个点击事件
+       * children用来描述标签的子节点.在上面的代码中,children是一个字符串值,意思是div标签有一个文本子节点:
+       * 是一个字符串值,意思是div标签有一个文本子节点: <div>click me</div>
+       *
+       * 难点就是 如果将click 修改为 click again 应该如何只更新这部分内容
+       */
+      const vnode = {
+        tag: "div",
+        props: {
+          onClick: () => alert("hello"),
+        },
+        children: "click again",
+      };
+
+      // 接下来编写编译器 将vnode 编译为 真实dom
+      function renderer(vnode, container) {
+        const el = document.createElement(vnode.tag);
+
+        // 处理事件
+        for (const key in vnode.props) {
+          if (/^on/.test(key)) {
+            el.addEventListener(key.substr(2).toLowerCase(), vnode.props[key]);
+          }
+        }
+
+        // 处理children
+        if (typeof vnode.children === "string") {
+          // 如果是字符串,说明它是元素的文本子节点
+          el.appendChild(document.createTextNode(vnode.children));
+        } else if (typeof Array.isArray(vnode.children)) {
+          // 递归调用renderer函数渲染子节点,使用当前元素el作为挂载点
+          vnode.children.forEach((child) => {
+            renderer(child, el);
+          });
+        }
+        container.appendChild(el);
+      }
+
+      renderer(vnode, document.body);
+    </script>
+  </body>
+</html>
