@@ -8,7 +8,8 @@
     <style></style>
   </head>
   <body>
-    <script>
+    <script type="module">
+      import { mountElement } from "./utils/index.js";
       // 渲染器的作用就是将虚拟DOM转化为真实DOM
       /**
        * tag用来描述标签名称,所以tag:'div'描述的就是一个<div>
@@ -26,31 +27,7 @@
         children: "click again",
       };
 
-      // 接下来编写编译器 将vnode 编译为 真实dom
-      function renderer(vnode, container) {
-        const el = document.createElement(vnode.tag);
-
-        // 处理事件
-        for (const key in vnode.props) {
-          if (/^on/.test(key)) {
-            el.addEventListener(key.substr(2).toLowerCase(), vnode.props[key]);
-          }
-        }
-
-        // 处理children
-        if (typeof vnode.children === "string") {
-          // 如果是字符串,说明它是元素的文本子节点
-          el.appendChild(document.createTextNode(vnode.children));
-        } else if (typeof Array.isArray(vnode.children)) {
-          // 递归调用renderer函数渲染子节点,使用当前元素el作为挂载点
-          vnode.children.forEach((child) => {
-            renderer(child, el);
-          });
-        }
-        container.appendChild(el);
-      }
-
-      renderer(vnode, document.body);
+      mountElement(vnode, document.body);
     </script>
   </body>
 </html>
