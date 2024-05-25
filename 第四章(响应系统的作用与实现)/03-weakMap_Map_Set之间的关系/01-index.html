@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    123
+    <script type="module">
+      /**
+       * Map 和 WeakMap 的区别
+       * 1. Map 可以使用任意类型的值作为键，WeakMap 只能使用对象作为键
+       * 2. Map 会记住所有的键，不会被垃圾回收机制回收，WeakMap 的键是弱引用，会被垃圾回收机制回收
+       * 3. 所以 这里打印 map是有值的,但是weakmap是空的, 所以Map可能会导致内存泄漏
+       */
+      const map = new Map()
+      const weakmap = new WeakMap()
+
+      const obj = { a: 1 }
+      map.set(obj, 1)
+      map.set(2, 1)
+
+      weakmap.set(obj, 5)
+
+      console.log({
+        map,
+        weakmap,
+      })
+
+      // ;(function () {
+      //   const foo = { foo: 1 }
+      //   const bar = { bar: 2 }
+      //   map.set(foo, 1)
+      //   weakmap.set(bar, 2)
+      // })()
+
+      // console.log({
+      //   map,
+      //   weakmap,
+      // })
+    </script>
+  </body>
+</html>
