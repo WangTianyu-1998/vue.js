@@ -10,21 +10,23 @@
   <body>
     <script type="module">
       import { effect, obj } from "./index.js"
-
+      let ss = "not"
       effect(() => {
-        console.log("run")
-        // 分支切换,这里如果ok是false 则不应该进行收集依赖
-        // 也就是WeakMap应该为空,但是这里会收集依赖
-        // 这就导致副作用函数进行了不必要的更新
-        // 如果修改  { text: "hello", ok: false } => { text: "hello Vue3", ok: true }
-        // 应该不需要进行执行
+        // 当判断条件不成立的时候,应该不会触发副作用函数
         document.body.innerHTML = obj.ok ? obj.text : "not"
-        console.log("render")
       })
 
-      // setTimeout(() => {
-      //   obj.text = "hello1"
-      // }, 1000)
+      setTimeout(() => {
+        obj.ok = false
+      }, 1000)
+
+      setTimeout(() => {
+        obj.text = "两秒后再次修改"
+      }, 2000)
+
+      setTimeout(() => {
+        obj.text = "三秒后再次修改"
+      }, 3000)
     </script>
   </body>
 </html>

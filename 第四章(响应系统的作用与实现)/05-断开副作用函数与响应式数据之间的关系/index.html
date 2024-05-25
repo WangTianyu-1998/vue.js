@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script>
+      let activeEffect
+
+      function effect(fn) {
+        // 解决条件分支变化导致的非必要副作用函数执行
+        const effectFn = () => {
+          // 调用cleanup函数,完成清除工作
+          cleanup(effectFn)
+          // 当effectFn执行时,将其设置为当前激活的副作用函数
+          activeEffect = effectFn
+          fn()
+        }
+        // activeEffect.deps 用来存储所有与该副作用函数相关联的依赖集合
+        effectFn.deps = []
+        effectFn()
+      }
+
+      const bucket = new WeakMap()
+
+      const data = { text: "hello Vue3", ok: true }
+
+      const obj = new Proxy(data, {
+        get(target, key) {
+          console.log("????")
+          track(target, key)
+          return target[key]
+        },
+        set(target, key, newVal) {
+          target[key] = newVal
+          trigger(target, key)
+          return true
+        },
+      })
+
+      /**
+       * 收集依赖
+       */
+      function track(target, key) {
+        if (!activeEffect) return
+        let depsMap = bucket.get(target)
+        if (!depsMap) {
+          bucket.set(target, (depsMap = new Map()))
+        }
+        let deps = depsMap.get(key)
+        if (!deps) {
+          depsMap.set(key, (deps = new Set()))
+        }
+        deps.add(activeEffect)
+        // deps 就是一个与当前副作用函数存在联系的依赖集合
+        // 将其添加到 activeEffect.deps 数组中
+        activeEffect.deps.push(deps)
+        console.log(deps, "开始读")
+      }
+
+      /**
+       * 触发依赖
+       */
+      function trigger(target, key) {
+        const depsMap = bucket.get(target)
+        if (!depsMap) return
+        const effects = depsMap.get(key)
+        // const
+        // effects && effects.forEach((fn) => fn())
+        // 解决cleanup死循环问题
+        const effectsToRun = new Set(effects) // 新增
+        effectsToRun.forEach((effectFn) => effectFn()) // 新增
+      }
+
+      function cleanup(fn) {
+        // fn，就是当前要执行的副作用函数
+        fn &&
+          fn.deps.forEach((item) => {
+            // 此时的 item 是 new Set();
+            item.delete(fn) // 将他从集合中删除掉
+          })
+        fn.deps.length = 0 // 然后清空这个数组
+      }
+
+      effect(() => {
+        // 分支切换,这里如果ok是false 则不应该进行收集依赖
+        // 也就是WeakMap应该为空,但是这里会收集依赖
+        // 这就导致副作用函数进行了不必要的更新
+        // 如果修改  { text: "hello", ok: false } => { text: "hello Vue3", ok: true }
+        // 应该不需要进行执行
+        document.body.innerHTML = obj.ok ? obj.text : "not"
+      })
+
+      setTimeout(() => {
+        obj.ok = false
+      }, 1000)
+
+      setTimeout(() => {
+        obj.text = "sdsdsdsdsd"
+      }, 2000)
+
+      setTimeout(() => {
+        obj.text = "2sdsdsdsdsd"
+      }, 3000)
+    </script>
+  </body>
+</html>

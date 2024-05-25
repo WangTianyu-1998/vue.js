@@ -7,10 +7,11 @@ export function effect(fn) {
 
 const bucket = new WeakMap()
 
-const data = { text: "hello Vue3", ok: false }
+const data = { text: "hello Vue3", ok: true }
 
 export const obj = new Proxy(data, {
   get(target, key) {
+    console.log("????")
     track(target, key)
     return target[key]
   },
@@ -35,8 +36,7 @@ function track(target, key) {
     depsMap.set(key, (deps = new Set()))
   }
   deps.add(activeEffect)
-
-  console.log(bucket)
+  console.log(bucket, "开始读")
 }
 
 /**
