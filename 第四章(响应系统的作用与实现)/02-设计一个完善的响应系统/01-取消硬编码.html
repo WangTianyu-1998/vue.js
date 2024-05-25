@@ -18,7 +18,7 @@
 
       // effect函数用来注册副作用函数
       function effect(fn) {
-        // 当调用effect 注册副作用那函数时,将副作用函数fn赋值给全局变量activeEffect
+        // 当调用effect 注册副作用那函数xiq时,将副作用函数fn赋值给全局变量activeEffect
         activeEffect = fn;
         // 立即执行副作用函数
         fn();
