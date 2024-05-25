@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      import { effect, obj } from "./index.js"
+
+      effect(() => {
+        console.log("run")
+        // 分支切换,这里如果ok是false 则不应该进行收集依赖
+        // 也就是WeakMap应该为空,但是这里会收集依赖
+        // 这就导致副作用函数进行了不必要的更新
+        // 如果修改  { text: "hello", ok: false } => { text: "hello Vue3", ok: true }
+        // 应该不需要进行执行
+        document.body.innerHTML = obj.ok ? obj.text : "not"
+        console.log("render")
+      })
+
+      // setTimeout(() => {
+      //   obj.text = "hello1"
+      // }, 1000)
+    </script>
+  </body>
+</html>

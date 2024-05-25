@@ -16,19 +16,19 @@
        * 2. Map 会记住所有的键，不会被垃圾回收机制回收，WeakMap 的键是弱引用，会被垃圾回收机制回收
        * 3. 所以 这里打印 map是有值的,但是weakmap是空的, 所以Map可能会导致内存泄漏
        */
-      const map = new Map()
-      const weakmap = new WeakMap()
+      // const map = new Map()
+      // const weakmap = new WeakMap()
 
-      const obj = { a: 1 }
-      map.set(obj, 1)
-      map.set(2, 1)
+      // const obj = { a: 1 }
+      // map.set(obj, 1)
+      // map.set(2, 1)
 
-      weakmap.set(obj, 5)
+      // weakmap.set(obj, 5)
 
-      console.log({
-        map,
-        weakmap,
-      })
+      // console.log({
+      //   map,
+      //   weakmap,
+      // })
 
       // ;(function () {
       //   const foo = { foo: 1 }
@@ -41,6 +41,21 @@
       //   map,
       //   weakmap,
       // })
+
+      // let depsMap
+      const effect1 = () => {
+        console.log("effect1")
+      }
+
+      let target = { text: "hello" }
+      const bucket = new Map()
+      let depsMap
+      bucket.set(target, (depsMap = new Map()))
+      let deps
+      depsMap.set("text", (deps = new Set()))
+      // deps.add(effect1)
+      // console.log("🚀 ~ depsMap:", depsMap)
+      console.log("🚀 ~ bucket:", bucket)
     </script>
   </body>
 </html>

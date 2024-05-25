@@ -9,17 +9,22 @@
   </head>
   <body>
     <script type="module">
-      import { effect, obj } from "./02-重新设计桶数据结构.js";
+      import { effect, obj } from "./02-重新设计桶数据结构.js"
 
       effect(() => {
-        console.log("effect run"); // 打印两次
-        document.body.innerHTML = obj.text;
-      });
+        console.log("effect run") // 打印两次
+        document.body.innerHTML = obj.text
+      })
 
       setTimeout(() => {
         // 副作用函数中并没有读取 notExist 属性的值
-        obj.noExist = "hello Vue3";
-      }, 1000);
+        obj.noExist = "hello Vue3"
+      }, 1000)
+
+      setTimeout(() => {
+        // 副作用函数中并没有读取 notExist 属性的值
+        obj.noExist = "hello Vue3 = ss"
+      }, 2000)
     </script>
   </body>
 </html>
