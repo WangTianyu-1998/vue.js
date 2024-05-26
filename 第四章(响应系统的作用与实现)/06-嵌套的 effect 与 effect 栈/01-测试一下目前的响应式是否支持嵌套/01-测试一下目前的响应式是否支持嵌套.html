@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      import { effect, obj } from "./index.js"
+      /**
+       * 出现嵌套的场景
+       * Vue.js的渲染函数就会出现嵌套的场景
+       *
+       * 例如:
+       * Bar 组件
+       * const Bar = {
+       *  render() {}
+       * }
+       * Foo 组件渲染了 Bar 组件
+       * const Foo = {
+       * render() {
+       *    return <Bar />
+       *  }
+       * }
+       */
+
+      const data = { foo: true, bar: true }
+      let temp1, temp2
+
+      // effectFn1嵌套了effectFn2
+      effect(function effectFn1() {
+        console.log("effectFn1 执行")
+
+        effect(function effectFn2() {
+          // effectFn2 会在 effectFn1 执行时执行
+          console.log("effectFn2 执行")
+          temp2 = obj.bar
+        })
+        temp1 = obj.foo
+      })
+
+      // 此时修改 obj.foo 只会触发effectFn2执行
+      obj.foo = false
+      // 理想状态是 修改obj.foo 触发 effectFn1执行,由于effectFn2嵌套在effectFn1中,所以effectFn2也会执行
+      // 而修改obj,bar时,只会触发effectFn2执行
+      // 但是执行结果为:
+      // effectFn1 执行
+      // effectFn2 执行
+      // effectFn2 执行
+
+      // 前两次是正常的 effectFn1 执行, effectFn2 执行
+      // 但是第三次修改了 obj.foo, 但是只触发了 effectFn2 执行, 没有触发 effectFn1 执行
+      // 这是不符合预期的
+    </script>
+  </body>
+</html>

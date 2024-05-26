@@ -92,7 +92,11 @@
         // 这就导致副作用函数进行了不必要的更新
         // 如果修改  { text: "hello", ok: false } => { text: "hello Vue3", ok: true }
         // 应该不需要进行执行
-        document.body.innerHTML = obj.ok ? obj.text : "not"
+        // document.body.innerHTML = obj.ok ? obj.text : "not"
+        console.log(111)
+        effect(function () {
+          console.log(222)
+        })
       })
 
       setTimeout(() => {

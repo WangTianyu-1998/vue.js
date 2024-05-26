@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      import { effect, obj } from "./index.js"
+      /**
+       * 需要一个副作用函数栈 effectStack
+       * 在副作用函数执行时,将当前的副作用函数压入栈中,待副作用函数执行完毕后,将其从栈中移除
+       * 并始终让activeEffect 指向栈顶的副作用函数
+       * 这样就能做到一个响应式数据只会收集直接读取其值的副作用函数
+       * 而不会出现相互影响的情况
+       */
+
+      const data = { foo: true, bar: true }
+      let temp1, temp2
+
+      // effectFn1嵌套了effectFn2
+      effect(function effectFn1() {
+        console.log("effectFn1 执行")
+
+        effect(function effectFn2() {
+          // effectFn2 会在 effectFn1 执行时执行
+          console.log("effectFn2 执行")
+          temp2 = obj.bar
+        })
+        temp1 = obj.foo
+      })
+
+      obj.foo = false
+    </script>
+  </body>
+</html>
