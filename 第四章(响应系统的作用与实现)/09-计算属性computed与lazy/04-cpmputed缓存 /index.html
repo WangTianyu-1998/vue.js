@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <button id="btn">执行effect</button>
+  <body>
+    <script type="module">
+      /**
+       * 目前使用effect会立即执行,但是有些场景,希望需在需要的时候再执行
+       * lazy 和之前的调度器一样,通过options选择对象执行
+       */
+      import { effect, obj, jobQueue, computed } from "./index.js";
+      //   const effectFn = effect(() => obj.foo + obj.bar, {
+      //     lazy: true,
+      //   });
+
+      const sumRes = computed(() => obj.foo + obj.bar);
+      console.log(sumRes.value, "@@sumRes");
+      console.log(sumRes.value, "@@sumRes");
+      console.log(sumRes.value, "@@sumRes");
+    </script>
+  </body>
+</html>

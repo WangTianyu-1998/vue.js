@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <button id="btn">执行effect</button>
+  <body>
+    <script type="module">
+      /**
+       * 当在另外一个effect的副作用函数中读取sumRes.value的值,此时修改obj.foo的值
+       * 但是此时effect中sumRes.value的值并没有更新
+       */
+      import { effect, obj, jobQueue, computed } from "./index.js";
+      const sumRes = computed(() => obj.foo + obj.bar);
+      effect(() => {
+        debugger;
+        console.log(sumRes.value, "@@sumRes");
+      });
+      btn.onclick = () => {
+        obj.foo++;
+      };
+    </script>
+  </body>
+</html>

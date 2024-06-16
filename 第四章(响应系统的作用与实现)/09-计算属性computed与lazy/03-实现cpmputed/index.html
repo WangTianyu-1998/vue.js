@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <button id="btn">执行effect</button>
+  <body>
+    <script type="module">
+      /**
+       * 新增了两个变量,value和dirty
+       * 其中value用来缓存上一次计算的值,只有当dirty为true时,才会调用effectFn重新计算
+       * 否则直接返回上一次的值
+       * 所以无论访问多少次,都只会在第一次访问的时候进行真正的计算,后续访问都直接读取value的值
+       */
+      import { effect, obj, jobQueue, computed } from "./index.js";
+      const sumRes = computed(() => obj.foo + obj.bar);
+      console.log(sumRes.value, "@@sumRes");
+      console.log(sumRes.value, "@@sumRes");
+      btn.onclick = () => {
+        obj.foo++;
+      };
+      console.log(sumRes.value, "@@sumRes");
+    </script>
+  </body>
+</html>

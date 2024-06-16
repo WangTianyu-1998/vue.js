@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <button id="Btn">change</button>
+    <div id="container"></div>
+    <script type="module">
+      import { traverse, data, obj, effect, watch } from "./index.js";
+      /**
+       * 默认情况下只有当依赖方式变化时才会执行,如果希望立即执行,可以通过immediate设置为true
+       * 此时就需要将 scheduler 调度函数立即执行一次
+       * 还有flush
+       * post 将副作用函数放到一个微队列中,等待DOM更新完成后执行
+       */
+      console.log("123123");
+      watch(
+        obj,
+        (newValue) => {
+          console.log("change", newValue);
+        },
+        {
+          // 回调函数会在 watch 创建时立即执行一次
+          // immediate: false,
+          flush: "pre", // 还可以指定为 'post' | 'sync'
+        }
+      );
+
+      Btn.onclick = () => {
+        console.log(111);
+        obj.foo++;
+      };
+    </script>
+  </body>
+</html>

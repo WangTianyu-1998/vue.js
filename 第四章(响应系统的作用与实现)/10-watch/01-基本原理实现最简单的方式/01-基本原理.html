@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <button id="Btn">change</button>
+    <div id="container"></div>
+    <script type="module">
+      import { effect, data, obj } from "./01-基本原理.js";
+      /**
+       * watch的视线本质就是利用了effect以及options.scheduler选项
+       * effect(()=>{
+       *  console.log(obj.foo)
+       * },{
+       *  scheduler(){
+       *     当obj.foo的值变化时,会执这个调度函数
+       *   }
+       * })
+       */
+      function watch(source, cb) {
+        effect(
+          // 依赖收集
+          () => source,
+          {
+            // 当数据变化后,触发执行调度器
+            scheduler() {
+              cb();
+            },
+          }
+        );
+      }
+
+      watch(obj, () => {
+        console.log("数据变化了!", obj);
+        container.innerHTML = obj.foo;
+      });
+
+      Btn.onclick = () => {
+        obj.foo++;
+      };
+    </script>
+  </body>
+</html>

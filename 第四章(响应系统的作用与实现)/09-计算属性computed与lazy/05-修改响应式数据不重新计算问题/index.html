@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <button id="btn">执行effect</button>
+  <body>
+    <script type="module">
+      /**
+       * 当修改响应式数据时,不会重复计算,因为computed内部设置了缓存,dirty为false无法进行effect
+       * 解决方案是,我们为effect添加了调度器,它会在getter函数中所以来的响应式数据发生变化时执行,这样我们可以在调度器中将dirty重置为true
+       * 当下一次修改响应式时,就会重新运行计算属性
+       */
+      import { effect, obj, jobQueue, computed } from "./index.js";
+      const sumRes = computed(() => obj.foo + obj.bar);
+      console.log(sumRes.value, "@@sumRes");
+      console.log(sumRes.value, "@@sumRes");
+      console.log(sumRes.value, "@@sumRes");
+      btn.onclick = () => {
+        obj.foo++;
+        console.log(sumRes.value, "@@sumRe222s");
+      };
+    </script>
+  </body>
+</html>

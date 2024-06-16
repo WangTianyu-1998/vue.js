@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <button id="Btn">change</button>
+    <div id="container"></div>
+    <script type="module">
+      import { traverse, data, obj, effect } from "./index.js";
+      /**
+       * 传递给watch函数的第一个参数不再是一个响应式数据,而是一个getter函数.
+       * 在getter函数内部,用户可以指定该watch哪些响应式数据,只有当这些数据变化时,才会触发回调函数执行
+       * watch(
+       *  getter函数
+       * ()=> obj.foo,
+       * ()=> {
+       *    console.log('obj.foo 的值变了')
+       *  }
+       * )
+       */
+      function watch(source, cb) {
+        // 定义getter
+        let getter;
+        // 如果source时函数,说明用户传递的是getter,所以执行吧source赋值getter
+        if (typeof source === "function") {
+          getter = () => traverse(source());
+        } else {
+          // 否则按照原来的实现调用 traverse 递归的读取
+          getter = () => traverse(source);
+        }
+
+        console.log(getter(), "@@getter");
+        // 执行响应式
+        effect(
+          // 执行 getter
+          () => getter(),
+          {
+            // 执行调度器触发 trigger
+            scheduler() {
+              cb();
+            },
+          }
+        );
+      }
+
+      watch(
+        () => obj.foo,
+        () => {
+          console.log("数据更新啦", obj);
+          container.innerHTML = JSON.stringify(obj);
+          document.body.appendChild(container);
+        }
+      );
+
+      Btn.onclick = () => {
+        console.log(123);
+        obj.foo++;
+      };
+    </script>
+  </body>
+</html>

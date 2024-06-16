@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <button id="Btn">change</button>
+    <div id="container"></div>
+    <script type="module">
+      import { effect, data, obj } from "./index.js";
+      /**
+       * 在01中 硬编码对source.foo的读取. 所以只能观测obj.foo的改变.为了让watch函数具有通用性
+       * 需要封装一个通用的读取操作
+       *
+       */
+      function watch(source, cb) {
+        effect(
+          // 调用traverse 递归的读取
+          () => traverse(source),
+          {
+            // 当数据变化后,触发执行调度器
+            scheduler() {
+              cb();
+            },
+          }
+        );
+      }
+
+      /**
+       * 增加响应式数据读取的通用性
+       */
+      function traverse(value, seen = new Set()) {
+        // 如果要读取的数据是原始值,或者已经被读取过了,那么什么都不做
+        if (typeof value !== "object" || value === null || seen.has(value))
+          return;
+        // 将数据添加到seen 中 代表遍历的读取过了, 避免循环引用引起的死循环
+        seen.add(value);
+        // 暂时不考虑数据等其他结构
+        // 假设value就是一个对象,使用for..in 读取对象的每一个值,并递归的调用 traverse
+        for (const key in value) {
+          traverse(value[key], seen);
+        }
+        return value;
+      }
+
+      watch(obj, () => {
+        console.log("数据变化了!", obj);
+        container.innerHTML = obj.foo;
+      });
+
+      Btn.onclick = () => {
+        obj.foo++;
+      };
+    </script>
+  </body>
+</html>
