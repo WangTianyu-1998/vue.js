@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script>
+      /**
+       * Reflect 是一个全局内置独享,其下有许多方法例如
+       * Reflect.get(target目标函数, thisArg target函数调用时绑定的this对象, argArrayList target函数调用时传入的实参列表,该参数应该是一个类数组的对象)
+       * Reflect.set()
+       * Reflect.apply()
+       * Reflect下的方法与Proxy的拦截器方法相同,任何能够在Proxy找到的同名方法都可以在Reflect中找到
+       */
+      // 1. demo1 直接读取
+      const obj = {
+        foo: 5,
+        get foo() {
+          return this.foo;
+        },
+      };
+      console.log(Reflect.get(obj, "foo", { foo: 10 })); //1
+      //   console.log(obj.foo); //1
+      //   console.log(Reflect.get(obj, "foo")); //1
+      //   console.log(Reflect.apply(Math.floor, undefined, [1.75]));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      // delete 如何触发依赖
+      /**
+       * 首先检查被删除的属性是否属于对象自身
+       * 然后调用 Reflect.deleteProperty 完成属性的删除工作, 只有当这两部的结果都满足时,才调用 trigger 函数
+       * 需要注意的是,在调用 trigger 函数时,我们传递了新的操作类型 delete
+       * 由于删除操作会使得对线的键变少,它会影响for...in循环的次数
+       * 因此当操作类型为 delete时,也应该触发那些与 ITERATE_KEY 相关联的副作用函数重新执行
+       */
+      import { traverse, data, obj, effect, watch } from "./index.js";
+
+      effect(() => {
+        delete obj.foo;
+      });
+
+      obj.foo = 2;
+    </script>
+  </body>
+</html>

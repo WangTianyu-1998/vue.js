@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      // for.. in 如何触发依赖 优化for in 的性能
+      import { traverse, data, obj, effect, watch } from "./index.js";
+
+      effect(() => {
+        delete obj.foo;
+        for (const key in obj) {
+          console.log(key);
+        }
+        // console.log("foo" in obj);
+      });
+      // 当给代理对象添加新的bar属性时, 会触发set拦截函数执行.
+      // set拦截函数接收到的key就是字符串bar 因此最终调用trigger函数时也只是触发了与bar相关联的副作用函数重造执行
+      // 但是
+      console.log(obj);
+    </script>
+  </body>
+</html>

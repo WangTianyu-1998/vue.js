@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      /**
+       *
+       */
+      import { effect, reactive, shallowReactive } from "./index.js";
+
+      // 1. 深层响应
+      // const obj = reactive({ foo: { bar: 1 } });
+      // effect(() => {
+      //   console.log(obj.foo.bar, "@@");
+      // });
+      // obj.foo.bar = 10;
+
+      const obj = shallowReactive({ foo: { bar: 1 } });
+
+      effect(() => {
+        console.log(obj.foo.bar, "@@");
+      });
+      // obj.foo 是响应的,可以触发副作用函数重新执行
+      obj.foo = { bar: 2 };
+      // obj.foo.bar 是非响应的,不会触发副作用函数重新执行
+      obj.foo.bar = 3;
+    </script>
+  </body>
+</html>

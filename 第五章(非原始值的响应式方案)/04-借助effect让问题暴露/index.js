@@ -1,4 +1,10 @@
-export const data = { foo: 1 };
+export const data = {
+  foo: 1,
+  get bar() {
+    console.log(this, "@this");
+    return this.foo;
+  },
+};
 let activeEffect;
 const effectStack = [];
 
@@ -6,7 +12,7 @@ const bucket = new WeakMap();
 
 /**
  * 通过新增代码可以看到,传递给effect函数的fn才是真正的副作用函数,
- * 而effectFn是我们包装后的副作用函数,在effectFn中我们将fn的执行结果存储到res中
+ * 而effectFn是我们包装后的副作用函数,在effxctFn中我们将fn的执行结果存储到res中
  */
 export function effect(fn, options = {}) {
   const effectFn = () => {
@@ -14,7 +20,6 @@ export function effect(fn, options = {}) {
     activeEffect = effectFn;
     effectStack.push(effectFn);
     // 将fn的执行结果存储到res中 新增
-    console.log(fn, "@@fn");
     const res = fn();
 
     effectStack.pop();
@@ -30,16 +35,15 @@ export function effect(fn, options = {}) {
   if (!options.lazy) {
     effectFn();
   }
-  console.log(effectFn, "@@effectFn");
   // 将副作用函数作为返回值返回
   return effectFn; //新增
 }
 
 export const obj = new Proxy(data, {
-  get(target, key) {
-    console.log(target, "@@target");
+  get(target, key, receiver) {
     track(target, key);
-    return target[key];
+    // return target[key];
+    return Reflect.get(target, key, receiver);
   },
   set(target, key, newVal) {
     target[key] = newVal;
@@ -49,7 +53,6 @@ export const obj = new Proxy(data, {
 });
 
 function track(target, key) {
-  console.log(target, "wewe");
   if (!activeEffect) return target[key];
   let depsMap = bucket.get(target);
   if (!depsMap) {
@@ -61,7 +64,6 @@ function track(target, key) {
   }
   deps.add(activeEffect);
   activeEffect.deps.push(deps);
-  console.log(deps, "@@deps");
 }
 
 function trigger(target, key) {
@@ -126,7 +128,6 @@ export function computed(getter) {
   const obj = {
     get value() {
       if (dirty) {
-        console.log("执行effect");
         value = effectFn();
         // 计算完之后,将dirty设置为false,下次访问直接使用缓存到value中的值
         dirty = false;
@@ -137,4 +138,74 @@ export function computed(getter) {
     },
   };
   return obj;
+}
+
+/**
+ * 增加响应式数据读取的通用性
+ */
+export function traverse(value, seen = new Set()) {
+  // 如果要读取的数据是原始值,或者已经被读取过了,那么什么都不做
+  if (typeof value !== "object" || value === null || seen.has(value)) return;
+  // 将数据添加到seen 中 代表遍历的读取过了, 避免循环引用引起的死循环
+  seen.add(value);
+  // 暂时不考虑数据等其他结构
+  // 假设value就是一个对象,使用for..in 读取对象的每一个值,并递归的调用 traverse
+  for (const key in value) {
+    traverse(value[key], seen);
+  }
+  return value;
+}
+
+export function watch(source, cb, options = {}) {
+  // 定义getter
+  let getter;
+  // 如果source时函数,说明用户传递的是getter,所以执行吧source赋值getter
+  if (typeof source === "function") {
+    if (typeof source() === "object") {
+      // 如果是对象,则使用traverse进行递归
+      getter = () => traverse(source());
+    } else {
+      getter = source;
+    }
+  } else {
+    // 否则按照原来的实现调用 traverse 递归的读取
+    getter = () => traverse(source);
+  }
+  // 定义新旧值
+  let oldValue, newValue;
+  // 提取 scheduler 调度函数为一个独立的job函数
+  const job = () => {
+    // 在scheduler中重新执行辅佐同函数,得到的是新值
+    newValue = effectFn();
+    // 将旧值和新值作为回调函数的参数
+    cb(newValue, oldValue);
+    // 更新旧值,不然下次会得到错误的旧值
+    oldValue = newValue;
+  };
+  console.log(oldValue, "@oldValue");
+  // 使用effect注册副作用函数时,开启lazy选项,并吧返回值存储到effectFn中 以便后续手动调用
+  // 执行响应式
+  const effectFn = effect(
+    // 执行 getter
+    () => getter(),
+    {
+      lazy: true,
+      // 执行调度器触发 trigger
+      scheduler: () => {
+        if (options.flush === "post") {
+          const p = Promise.resolve();
+          p.then(job);
+        } else {
+          job();
+        }
+      },
+    }
+  );
+  if (options.immediate) {
+    // 如果是立即执行,则手动调用一次job函数
+    job();
+  } else {
+    // 手动调用副作用函数,拿到的值就是旧值
+    oldValue = effectFn();
+  }
 }

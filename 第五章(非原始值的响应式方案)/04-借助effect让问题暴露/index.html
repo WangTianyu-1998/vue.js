@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      import { traverse, data, obj, effect, watch } from "./index.js";
+      /**
+       * const data = {
+            foo: 1,
+            get bar() {
+                return this.foo;
+            },
+        };
+        bar 属性是一个访问器属性,它返回了this.foo 属性值.接着在effect副作用函数中通过代理对象p访问bar属性
+      */
+      // 分析下面这段代码发生了什么
+      // 1. 当effect注册的副作用函数执行时,会读取p.bar属性,它发现p.bar是一个访问器属性,因此执行getter函数.
+      // 2. 由于在getter函数中通过this.foo读取了foo属性值,因此我们认为副作用该函数与属性foo之间也会建立联系
+      // 3. 当修改data.foo的值应该能触发响应式,是的副作用函数重新执行才会,但是实际上并没有
+      effect(() => {
+        console.log(obj.bar);
+      });
+      obj.foo++;
+      // 问题就出在bar属性的访问器函数getter里, this指向是谁?
+      //   const obj = {
+      //     foo: 1,
+      //     get() {
+      //       // 这里的this指向谁?
+      //       return this.foo;
+      //     },
+      //   };
+      // 1. 首先通过代理对象obj 访问obj.bar,这会触发代理对象的get拦击函数执行:
+      //   const obj = new Proxy(obj, {
+      //     get(target, key) {
+      //       track(target, key);
+      //       // 注意,这里没有使用Reflect.get 完成读取
+      //       return target[key];
+      //     },
+      //   });
+    </script>
+  </body>
+</html>

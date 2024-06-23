@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      /**
+       * Proxy可以创建一个代理对象,也就是说,Proxy 只能代理对象,无法带来非对象值,例如字符串,布尔值等
+       * 所谓代理,指的是一个对象基本语义的代理
+       */
+      // 1. 什么是基本语义代理? 给一个对象obj,可以对它解析读取和设置属性值
+      let obj = { foo: 1 };
+
+      const p = new Proxy(obj, {
+        get(target, key) {
+          console.log("get", key);
+          return target[key];
+        },
+        set(target, key, value) {
+          console.log("set", key, value, target);
+          target[key] = value;
+          return true;
+        },
+      });
+
+      p.foo; //读取
+      p.foo++; // 设置
+      console.log(obj);
+
+      // 若上代码,第一个参数是被代理的对象,第二个参数也是一个对象,这个对象是一组夹子
+      // 在js中万物皆对象,例如函数也是一个对象,调用函数也是对一个对象的基本操作
+      // 因此,我们可以用proxy来拦截函数的调用操作,这里我们使用apply拦截函数的调用
+      const fn = (name) => console.log("hello", name);
+
+      // 2. 代理函数
+      const p2 = new Proxy(fn, {
+        // target: 被代理的函数
+        // thisArg: 被代理函数的this指向
+        // argArray: 被代理函数的参数数组
+        apply(target, thisArg, argArray) {
+          return target.call(thisArg, ...argArray);
+        },
+      });
+      p2("world");
+      // 1和2说明了什么是基本操作,Proxy只能对一个对象的基本操作.那么什么是非基本操作呢?
+    </script>
+  </body>
+</html>

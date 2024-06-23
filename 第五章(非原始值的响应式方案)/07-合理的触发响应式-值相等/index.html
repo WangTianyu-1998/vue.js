@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      // 我们来看要面临的第一个问题，即当值没有发生变化时，应该不需要触发响应才对
+      import { traverse, data, obj, effect, watch } from "./index.js";
+
+      effect(() => {
+        console.log(obj.foo);
+      });
+      obj.foo = NaN;
+    </script>
+  </body>
+</html>

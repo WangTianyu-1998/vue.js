@@ -20,7 +20,10 @@
       function watch(source, cb) {
         effect(
           // 调用traverse 递归的读取
-          () => traverse(source),
+          () => {
+            console.log(traverse(source), "@@@");
+            return traverse(source);
+          },
           {
             // 当数据变化后,触发执行调度器
             scheduler() {

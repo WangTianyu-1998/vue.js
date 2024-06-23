@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      /**
+       *
+       */
+      import { effect, readonly } from "./index.js";
+
+      // 1. 深层响应
+      // const obj = reactive({ foo: { bar: 1 } });
+      // effect(() => {
+      //   console.log(obj.foo.bar, "@@");
+      // });
+      // obj.foo.bar = 10;
+
+      const obj = readonly({ foo: 1 });
+      obj.foo = 2;
+
+      console.log(obj);
+    </script>
+  </body>
+</html>
