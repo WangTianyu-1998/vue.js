@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      /**
+       * for of
+       * 不需要增加任何代码就能够使其正确地工作。这是因为只要数组的长度和元素值发生改变，副作用函数自然会重新执行。
+       * 最后需要指出的是，无论是使用 for...of 循环，还是调用values 等方法，它们都会读取数组的 Symbol.iterator 属性。该属性是一个 symbol 值，为了避免发生意外的错误，以及性能上的考虑，我们不应该在副作用函数与 Symbol.iterator 这类 symbol 值之间建立响应联系，因此需要修改 get 拦截函数
+       *
+       */
+      import { effect, reactive, shallowReactive } from "./index.js";
+
+      const arr = reactive(["foo"]);
+
+      effect(() => {
+        for (const item of arr.values()) {
+          console.log(item);
+        }
+      });
+      arr[1] = "bar";
+      arr.length = 0;
+    </script>
+  </body>
+</html>
