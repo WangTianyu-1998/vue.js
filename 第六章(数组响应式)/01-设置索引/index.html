@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      /**
+       * 需求
+       * 1. 在这段代码中,数组的原长度为1,并且副作用访问了length属性
+       * 然后设置数组索引为1的元素值,这会导致数组的长度变为2,
+       * 因此重新触发副作用函数执行,但是目前还做不到,因此需要去实现
+       * 2. 当修改数组length属性时,也会触发副作用函数执行
+       *
+       * 1.1 createReactive中的set方法中增加判断,如果是数组,检测被设置的索引是否小于数组长度,如果是是set否则为get
+       * 1.2 当操作类型为 ADD 并且目标对象是数组时，应该取出并执行那些与 length,属性相关联的副作用函数
+       *
+       * 2.1 trigger传入第四个参数,触发响应的最新值
+       * 2.2 如果目标数组是数组,并且修改了数组的length属性,对于索引大于或者等于新length值的元素应该将所有相关联的副作用函数去除并添加到effectToRun中待执行
+       *
+       */
+      import { effect, reactive, shallowReactive } from "./index.js";
+
+      const arr = reactive(["foo"]);
+
+      effect(() => {
+        // console.log(arr.length, "@@");
+        console.log(arr, "@@");
+      });
+      // arr[1] = "bar";
+      arr.length = 0;
+    </script>
+  </body>
+</html>

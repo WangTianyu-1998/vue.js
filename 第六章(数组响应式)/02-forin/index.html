@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      /**
+       * for in
+       * 不论是为数组添加新元素还是直接修改数组的长度,本质上都是修改了数组的length属性
+       * 借助ownKeys拦截目标target是否是数组,如果是则使用length作为key建立响应式
+       */
+      import { effect, reactive, shallowReactive } from "./index.js";
+
+      const arr = reactive(["foo"]);
+
+      effect(() => {
+        for (const key in arr) {
+          console.log(key);
+        }
+      });
+      arr[1] = "bar";
+      arr.length = 0;
+    </script>
+  </body>
+</html>
