@@ -17,15 +17,13 @@
        */
       import { effect, reactive, shallowReactive } from "./index.js";
 
-      const arr = reactive(["foo"]);
+      // const obj = {};
+      const arr = reactive([1]);
 
       effect(() => {
-        for (const item of arr.values()) {
-          console.log(item);
-        }
+        console.log(arr);
       });
-      arr[1] = "bar";
-      arr.length = 0;
+      arr.push(2);
     </script>
   </body>
 </html>
